@@ -54,6 +54,8 @@ const getPostTitles = async () => {
         msg.subject = text;
         msg.text = text;
         msg.html = $('#the_table div#container').first().html();
+        const re = /(href="|src=")/gi;
+        msg.html = msg.html.replace(re, '$1https://www.manytearsrescue.org/');
 
         try {
           await sgMail.send(msg);
@@ -74,4 +76,3 @@ const getPostTitles = async () => {
 };
 
 getPostTitles().then((dogs) => console.log(dogs));
-

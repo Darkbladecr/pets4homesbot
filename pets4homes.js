@@ -15,8 +15,7 @@ const storeData = (data, path) => {
 
 const loadData = (path) => {
   try {
-    const data = fs.readFileSync(path, 'utf8');
-    return JSON.parse(data);
+    return fs.readFileSync(path, 'utf8');
   } catch (err) {
     console.error(err);
     return false;
@@ -35,24 +34,22 @@ const getPostTitles = async () => {
   const oldDogs = loadData('dogs.json');
   try {
     const { data } = await axios.get(
-      'https://www.manytearsrescue.org/dogslookingforhomes.php'
+      'https://www.pets4homes.co.uk/search/?type_id=3&advert_type=2&location=NW3&distance=30&results=10&sort=datenew'
     );
     const $ = cheerio.load(data);
     const dogs = [];
 
-    $('#the_table div#container table:nth-child(even) tr:nth-child(2)').each(
-      (_, el) => {
-        const postTitle = $(el).text().replace('Name: ', '').trim();
-        dogs.push(postTitle.trim());
-      }
-    );
+    $('div.profilelisting:not(.paid-advert) h2').each((_, el) => {
+      const postTitle = $(el).text();
+      dogs.push(postTitle.trim());
+    });
     if (oldDogs) {
       if (oldDogs[0] !== dogs[0]) {
         console.log(`New dog: ${dogs[0]}`);
         const text = `New dog: ${dogs[0]}`;
         msg.subject = text;
         msg.text = text;
-        msg.html = $('#the_table div#container').first().html();
+        msg.html = $('div.profilelisting:not(.paid-advert)').first().html();
 
         try {
           await sgMail.send(msg);

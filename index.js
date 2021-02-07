@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const sgMail = require('@sendgrid/mail');
@@ -32,7 +33,7 @@ const msg = {
 };
 
 const getPostTitles = async () => {
-  const oldDogs = loadData('dogs.json');
+  const oldDogs = loadData(path.join(__dirname, 'dogs.json'));
   try {
     const { data } = await axios.get(
       'https://www.manytearsrescue.org/dogslookingforhomes.php'
@@ -73,3 +74,4 @@ const getPostTitles = async () => {
 };
 
 getPostTitles().then((dogs) => console.log(dogs));
+
